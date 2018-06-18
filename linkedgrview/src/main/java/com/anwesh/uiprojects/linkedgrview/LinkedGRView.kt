@@ -115,7 +115,7 @@ class LinkedGRView(ctx : Context) : View(ctx) {
             prev?.draw(canvas, paint)
             paint.color = Color.rgb(getColorPart(rIndex), getColorPart(gIndex), 0)
             canvas.save()
-            canvas.translate(gap * i + gap/10 + gap * state.scales[0], h/2)
+            canvas.translate(gap * i - gap/10 + gap * state.scales[0], h/2)
             canvas.drawRoundRect(RectF(-gap/10, -gap/3, gap/10, gap/3), gap/10, gap/10, paint)
             canvas.restore()
         }
