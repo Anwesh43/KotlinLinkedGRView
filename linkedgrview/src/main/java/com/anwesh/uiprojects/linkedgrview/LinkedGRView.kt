@@ -9,6 +9,8 @@ import android.graphics.*
 import android.view.View
 import android.view.MotionEvent
 
+val GR_NODES : Int = 5
+
 class LinkedGRView(ctx : Context) : View(ctx) {
 
     override fun onDraw(canvas : Canvas) {
@@ -76,6 +78,59 @@ class LinkedGRView(ctx : Context) : View(ctx) {
             if (animated) {
                 animated = false
             }
+        }
+    }
+
+    data class GRNode(var i : Int, val state : State = State()) {
+
+        private var next : GRNode? = null
+
+        private var prev : GRNode? = null
+
+        init {
+            addNeighbor()
+        }
+
+        fun addNeighbor() {
+            if (i < GR_NODES - 1) {
+                next = GRNode(i + 1)
+                next?.prev = this
+            }
+        }
+
+        fun draw(canvas : Canvas, paint : Paint) {
+            val w : Float = canvas.width.toFloat()
+            val h : Float = canvas.height.toFloat()
+            val gap : Float = w / GR_NODES
+            val rIndex : Int = i % 2
+            val gIndex : Int = (i + 1) % 2
+            val getScale : (Int) -> Float = {index -> index + (1 - 2 * index) * state.scales[1]}
+            val getColorPart : (Int) -> Int = {index -> (255 * getScale(index)).toInt()}
+            paint.color = Color.rgb(getColorPart(rIndex), getColorPart(gIndex), 0)
+            canvas.save()
+            canvas.translate(gap * i + gap/10 + gap * state.scales[0], h/2)
+            canvas.drawRoundRect(RectF(-gap/10, -gap/3, gap/10, gap/3), gap/10, gap/10, paint)
+            canvas.restore()
+        }
+
+        fun update(stopcb : (Float) -> Unit) {
+            state.update(stopcb)
+        }
+
+        fun startUpdating(startcb : () -> Unit) {
+            state.startUpdating(startcb)
+        }
+
+        fun getNext(dir : Int, cb : () -> Unit) : GRNode {
+            var curr : GRNode? = prev
+            if (dir == 1) {
+                curr = next
+            }
+            if (curr != null) {
+                return curr
+            }
+            cb()
+            return this
         }
     }
 
