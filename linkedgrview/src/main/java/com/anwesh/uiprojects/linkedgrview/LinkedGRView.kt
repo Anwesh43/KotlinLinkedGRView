@@ -152,4 +152,27 @@ class LinkedGRView(ctx : Context) : View(ctx) {
             curr.startUpdating(startcb)
         }
     }
+
+    data class Renderer(var view : LinkedGRView) {
+
+        private val animator : Animator = Animator(view)
+
+        private val linkedGR : LinkedGR = LinkedGR(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(Color.parseColor("#212121"))
+            linkedGR.draw(canvas, paint)
+            animator.animate {
+                linkedGR.update {
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            linkedGR.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
