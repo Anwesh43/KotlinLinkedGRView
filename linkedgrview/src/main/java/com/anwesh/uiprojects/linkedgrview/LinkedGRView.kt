@@ -4,7 +4,9 @@ package com.anwesh.uiprojects.linkedgrview
  * Created by anweshmishra on 18/06/18.
  */
 
+import android.app.Activity
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.*
 import android.view.View
 import android.view.MotionEvent
@@ -177,6 +179,15 @@ class LinkedGRView(ctx : Context) : View(ctx) {
             linkedGR.startUpdating {
                 animator.start()
             }
+        }
+    }
+
+    companion object {
+        fun create(activity : Activity) : LinkedGRView{
+            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            val view : LinkedGRView = LinkedGRView(activity)
+            activity.setContentView(view)
+            return view
         }
     }
 }
