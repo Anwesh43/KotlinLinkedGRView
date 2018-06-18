@@ -34,7 +34,7 @@ class LinkedGRView(ctx : Context) : View(ctx) {
 
     data class State(var prevScale : Float = 0f, var dir : Float = 0f, var j : Int = 0) {
 
-        val scales : Array<Float> = arrayOf(0f, 0f, 0f)
+        val scales : Array<Float> = arrayOf(0f, 0f)
 
         fun update(stopcb : (Float) -> Unit) {
             scales[j] += 0.1f * dir
@@ -112,6 +112,7 @@ class LinkedGRView(ctx : Context) : View(ctx) {
             val gIndex : Int = (i + 1) % 2
             val getScale : (Int) -> Float = {index -> index + (1 - 2 * index) * state.scales[1]}
             val getColorPart : (Int) -> Int = {index -> (255 * getScale(index)).toInt()}
+            prev?.draw(canvas, paint)
             paint.color = Color.rgb(getColorPart(rIndex), getColorPart(gIndex), 0)
             canvas.save()
             canvas.translate(gap * i + gap/10 + gap * state.scales[0], h/2)
@@ -151,7 +152,12 @@ class LinkedGRView(ctx : Context) : View(ctx) {
         }
 
         fun update(stopcb : (Float) -> Unit) {
-            curr.update(stopcb)
+            curr.update {
+                curr = curr.getNext(dir) {
+                    dir *= -1
+                }
+                stopcb(it)
+            }
         }
 
         fun startUpdating(startcb : () -> Unit) {
